@@ -5,7 +5,9 @@ This tool was created to resolve some disk space issues due to documents added t
 
 Currently the same expiry value is set for all specified buckets but could be easily extended to set this per bucket or document type.
 
-# Usage
+The tool will hit the Couchbase REST API and request the number of document ids specified using the batch size parameter. It will then set the expiry value for all returned documents. This process will repeat until all documents have been updated. 
+
+# Parameters
 
 This is a command line tool that takes the following parameters:
 
@@ -19,11 +21,11 @@ This is a command line tool that takes the following parameters:
 
 -e, --expiry       Required. The number of minutes to set as expiry time for each document
 
--s, --batchsize    The number of documents to request from Couchbase REST service for processing
+-v, --viewname     Required. The Couchbase map/reduce view used to get document ids
 
--v, --viewname     The Couchbase map/reduce view used to query documents with no expiry value
+-s, --batchsize    The number of documents to request from Couchbase REST service for processing (default = 2000)
 
--a, --apiport      The port the Couchbase REST API responds to
+-a, --apiport      The port the Couchbase REST API responds to (default = 8092)
 
 --help             Display this help screen.
 
