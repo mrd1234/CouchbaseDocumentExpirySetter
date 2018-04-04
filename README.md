@@ -2,9 +2,9 @@
 
 Sets document expiry for all documents in specified Couchbase buckets.
 
-This tool was created to resolve some disk space issues due to documents added to Couchbase by the https://github.com/OrleansContrib/OrleansCouchbaseProvider having no expiry value set. 
+This tool was created to resolve some disk space issues due to documents added to Couchbase by the [OrleansCouchbaseProvider](https://github.com/OrleansContrib/OrleansCouchbaseProvider) having no expiry value set. 
 
-Currently the same expiry value is set for all specified buckets but could be easily extended to set this per bucket or document type.
+Currently the same expiry value is set for all specified buckets but could be easily extended to set this per bucket or document type. See [this pull request](https://github.com/OrleansContrib/OrleansCouchbaseProvider/pull/22) for example of how to set up config file with per document expiries.
 
 The tool will hit the Couchbase REST API and request the number of document ids specified using the batch size parameter. It will then set the expiry value for all returned documents. This process will repeat until all documents have been updated. 
 
