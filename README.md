@@ -1,4 +1,5 @@
-# CouchbaseDocumentExpirySetter
+# Couchbase Document Expiry Setter
+
 Sets document expiry for all documents in specified Couchbase buckets.
 
 This tool was created to resolve some disk space issues due to documents added to Couchbase by the https://github.com/OrleansContrib/OrleansCouchbaseProvider having no expiry value set. 
@@ -7,7 +8,7 @@ Currently the same expiry value is set for all specified buckets but could be ea
 
 The tool will hit the Couchbase REST API and request the number of document ids specified using the batch size parameter. It will then set the expiry value for all returned documents. This process will repeat until all documents have been updated. 
 
-# Parameters
+## Parameters
 
 This is a command line tool that takes the following parameters:
 
@@ -31,7 +32,7 @@ This is a command line tool that takes the following parameters:
 
 --version          Display version information.
 
-# Couchbase requirements
+## Couchbase requirements
 
 Map/reduce views are used to get the list of documents to update.
 
