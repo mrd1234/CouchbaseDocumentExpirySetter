@@ -23,7 +23,7 @@ namespace CouchbaseDocumentExpirySetter
         [Option('p', "password", Required = true, HelpText = "Password for the specified Couchbase username")]
         public string Password { get; set; }
 
-        [Option('e', "expiry", Required = true, HelpText = "The number of minutes to set as expiry time for each document")]
+        [Option('e', "expiry", Required = true, HelpText = "The number of minutes to set as expiry time for each document (use 0 if you want document to never expire)")]
         public int ExpiryMinutes { get; set; }
 
         [Option('v', "viewname", Required = true, HelpText = "The Couchbase map/reduce view used to get document ids")]
