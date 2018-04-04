@@ -51,3 +51,7 @@ function (doc, meta) {
   emit(null, null);
 }
 ```
+
+## Disclaimer
+
+This has been tested with Couchbase 4.6.2-3905 Enterprise Edition (build-3905) only.
