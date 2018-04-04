@@ -20,7 +20,8 @@ This is a command line tool that takes the following parameters:
 
 -p, --password     Required. Password for the specified Couchbase username
 
--e, --expiry       Required. The number of minutes to set as expiry time for each document
+-e, --expiry       Required. The number of minutes to set as expiry time for each document (use 0 if you want
+                   document to never expire)
 
 -v, --viewname     Required. The Couchbase map/reduce view used to get document ids
 
