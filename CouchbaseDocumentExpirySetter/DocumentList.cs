@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CouchbaseDocumentExpirySetter
+﻿namespace CouchbaseDocumentExpirySetter
 {
+    using System;
+    using System.Collections.Generic;
+
     public class DocumentList
     {
         public string Bucket { get; set; }

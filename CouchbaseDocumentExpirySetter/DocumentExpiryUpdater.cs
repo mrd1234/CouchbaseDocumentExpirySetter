@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Couchbase;
-using Couchbase.Core;
-
-namespace CouchbaseDocumentExpirySetter
+﻿namespace CouchbaseDocumentExpirySetter
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using Couchbase;
+    using Couchbase.Core;
+
     public class DocumentExpiryUpdater
     {
         private Options Options { get; }
@@ -21,7 +20,7 @@ namespace CouchbaseDocumentExpirySetter
             ClusterHelper.Initialize(options.BuildClientConfiguration());
         }
 
-        public Task UpdateExpiryForDocumentsInBuckets()
+        public Task UpdateExpiryForDocumentsInBucketsAsync()
         {
             var updates = new List<Task>();
 
@@ -45,20 +44,26 @@ namespace CouchbaseDocumentExpirySetter
 
             using (var bucket = ClusterHelper.GetBucket(bucketName, password))
             {
+
+                //for (var x = 0; x < 50000; x++)
+                //{
+                //    await bucket.InsertAsync<Options>(new Document<Options> { Id = Guid.NewGuid().ToString() }).ConfigureAwait(false);
+                //}
+
                 var sw = new Stopwatch();
                 sw.Start();
 
-                var documents = await WebHelper.GetDocumentsWithNoExpiryAsync(address, Options.GetCredentials());
+                var documents = await DocumentHelper.GetDocumentsWithNoExpiryAsync(address, Options.GetCredentials()).ConfigureAwait(false);
                 while (documents.TotalRows != 0)
                 {
                     documents.Expiry = TimeSpan.FromMinutes(Options.ExpiryMinutes);
-                    await SetExpiryForBucketDocuments(bucket, documents);
+                    await SetExpiryForBucketDocumentsAsync(bucket, documents).ConfigureAwait(false);
 
                     processedDocuments += documents.TotalRows;
 
                     if (documents.Expiry.TotalSeconds.Equals(0)) address = Options.BuildRestUrl(bucketName, processedDocuments);
 
-                    documents = await WebHelper.GetDocumentsWithNoExpiryAsync(address, Options.GetCredentials());
+                    documents = await DocumentHelper.GetDocumentsWithNoExpiryAsync(address, Options.GetCredentials()).ConfigureAwait(false);
                 }
 
                 sw.Stop();
@@ -68,7 +73,7 @@ namespace CouchbaseDocumentExpirySetter
             }
         }
 
-        private Task SetExpiryForBucketDocuments(IBucket bucket, DocumentList documentList)
+        private Task SetExpiryForBucketDocumentsAsync(IBucket bucket, DocumentList documentList)
         {
             var runningTasks = new List<Task>();
 
@@ -86,7 +91,7 @@ namespace CouchbaseDocumentExpirySetter
             //Console.WriteLine($"Updating expiry for {documentId}");
             //return bucket.TouchAsync(documentId, ttl);
 
-            bucket.Touch(documentId, ttl);
+            var result = bucket.Touch(documentId, ttl);
             return Task.CompletedTask;
         }
     }

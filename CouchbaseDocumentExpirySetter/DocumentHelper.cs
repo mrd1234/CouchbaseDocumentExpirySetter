@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web.Script.Serialization;
-
-namespace CouchbaseDocumentExpirySetter
+﻿namespace CouchbaseDocumentExpirySetter
 {
-    public static class WebHelper
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
+    using System.Threading.Tasks;
+    using System.Web.Script.Serialization;
+
+    public static class DocumentHelper
     {
         public static async Task<DocumentList> GetDocumentsWithNoExpiryAsync(string address, NetworkCredential credentials)
         {

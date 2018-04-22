@@ -1,4 +1,4 @@
-﻿namespace CouchbaseDocumentExpirySetter
+﻿namespace CouchbaseMapReduceViewManager
 {
     using System;
     using CommandLine;
@@ -14,7 +14,7 @@
 
             if (options != null)
             {
-                PerformUpdate(options);
+                PerformUpdateAsync(options);
             }
 
             Console.WriteLine();
@@ -22,10 +22,10 @@
             Console.ReadKey();
         }
 
-        private static void PerformUpdate(Options options)
+        private static void PerformUpdateAsync(Options options)
         {
-            var updater = new DocumentExpiryUpdater(options);
-            updater.UpdateExpiryForDocumentsInBucketsAsync().Wait();
+            var updater = new CouchbaseViewManager(options);
+            updater.AddViewsAsync().Wait();
         }
     }
 }
