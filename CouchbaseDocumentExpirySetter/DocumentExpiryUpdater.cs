@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Couchbase;
     using Couchbase.Core;
+    using Couchbase.IO;
 
     public class DocumentExpiryUpdater
     {
@@ -28,7 +29,7 @@
 
             foreach (var bucket in buckets)
             {
-                Console.WriteLine($"Processing documents in {bucket.Key}...");
+                Console.WriteLine($"Processing documents in bucket '{bucket.Key}'...");
 
                 updates.Add(UpdateExpiryForDocumentsInBucketAsync(bucket.Key, bucket.Value));
             }
@@ -44,12 +45,6 @@
 
             using (var bucket = ClusterHelper.GetBucket(bucketName, password))
             {
-
-                //for (var x = 0; x < 50000; x++)
-                //{
-                //    await bucket.InsertAsync<Options>(new Document<Options> { Id = Guid.NewGuid().ToString() }).ConfigureAwait(false);
-                //}
-
                 var sw = new Stopwatch();
                 sw.Start();
 
@@ -69,7 +64,7 @@
                 sw.Stop();
 
                 Console.WriteLine();
-                Console.WriteLine($"Processing {processedDocuments} documents in {bucketName} bucket took {sw.Elapsed.TotalSeconds} seconds");
+                Console.WriteLine($"Processing {processedDocuments} documents in bucket '{bucketName}' took {sw.Elapsed.TotalSeconds} seconds");
             }
         }
 
@@ -89,9 +84,18 @@
         private static Task SetDocumentExpiryAsync(IBucket bucket, string documentId, TimeSpan ttl)
         {
             //Console.WriteLine($"Updating expiry for {documentId}");
-            //return bucket.TouchAsync(documentId, ttl);
+
+            //The async method seems to have issues so I don't consider it reliable at this time
+            //var result = bucket.TouchAsync(documentId, ttl);
 
             var result = bucket.Touch(documentId, ttl);
+
+            if (result.Status == ResponseStatus.Success) return Task.CompletedTask;
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Unable to set expiry value for documentId '{documentId}' - {result.Status}");
+            Console.ResetColor();
+
             return Task.CompletedTask;
         }
     }

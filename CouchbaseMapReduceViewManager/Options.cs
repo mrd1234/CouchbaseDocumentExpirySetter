@@ -27,7 +27,7 @@
         [Option('c', "viewmapcontent", Required = true, HelpText = "The code that will become the map part of the mapreduce view")]
         public string ViewMapContent { get; set; }
 
-        [Option('c', "viewreducecontent", Required = false, HelpText = "The code that will become the reduce part of the mapreduce view")]
+        [Option('r', "viewreducecontent", Required = false, HelpText = "The code that will become the reduce part of the mapreduce view")]
         public string ViewReduceContent { get; set; } = string.Empty;
 
         [Option('a', "apiport", Required = false, HelpText = "The port the Couchbase REST API responds to (default = 8092)")]

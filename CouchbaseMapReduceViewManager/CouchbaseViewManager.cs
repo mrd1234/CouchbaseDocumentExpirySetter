@@ -32,16 +32,27 @@
                     using (var bucketManager = bucket.CreateManager(Options.UserName, Options.Password))
                     {
                         var existing = await bucketManager.GetDesignDocumentAsync(Options.ViewName).ConfigureAwait(false);
-                        if (existing.Success) continue;
+                        if (existing.Success)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"Bucket '{b.Key}' already has a mapreduce view named '{Options.ViewName}' - skipping...");
+                            Console.ResetColor();
+                            continue;
+                        }
 
                         var result = await bucketManager.InsertDesignDocumentAsync(Options.ViewName, viewDefinition).ConfigureAwait(false);
-                        if (!result.Success) Console.WriteLine($"Error inserting view for bucket {b.Key}: {(result.Exception != null ? result.Exception.Message : result.Message)}");
+                        if (!result.Success)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"Error inserting view '{Options.ViewName}' for bucket '{b.Key}': {(result.Exception != null ? result.Exception.Message : result.Message)}");
+                            Console.ResetColor();
+                        }
                     }
 
                     sw.Stop();
 
                     Console.WriteLine();
-                    Console.WriteLine($"Processing {b.Key} bucket took {sw.Elapsed.TotalSeconds} seconds");
+                    Console.WriteLine($"Processing bucket '{b.Key}' took {sw.Elapsed.TotalSeconds} seconds");
                 }
             }
         }
