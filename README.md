@@ -63,6 +63,7 @@ An example of calling it from command line and having it inject a map reduce vie
 
 CouchbaseMapReduceViewManager.exe -h servername -b "<buckets to add view to - in same format as above>" -u username -p password -v no_ttl -c "function (doc, meta) { if (meta.expiration === 0) emit(null, null); }"
   
+NOTE: This will add the mapreduce view as a production view, not a development view. You can use web interface to copy to development if required.
 
 ## Disclaimer
 
