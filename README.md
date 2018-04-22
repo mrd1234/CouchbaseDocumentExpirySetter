@@ -53,6 +53,17 @@ function (doc, meta) {
 }
 ```
 
+## Adding a mapreduce view to Couchbase buckets
+
+You can do this using the Couchbase web interface, however the separate console application included in this solution (CouchbaseMapReduceViewManager.exe) may be better. 
+
+It can take a list of buckets for a Couchbase server and inject the specified mapreduce view. This can help if you need to use CouchbaseDocumentExpirySetter on many buckets/servers.
+
+An expample of calling it from command line and having it inject a map reduce view to return document id of all documents with no ttl/expiry looks like this:
+
+CouchbaseMapReduceViewManager.exe -h <servername> -b "<buckets to add view to - in same format as above>" -u <username> -p <password> -v no_ttl -c "function (doc, meta) { if (meta.expiration === 0) emit(null, null); }"
+  
+
 ## Disclaimer
 
 This has been tested with Couchbase 4.6.2-3905 Enterprise Edition (build-3905) only.
