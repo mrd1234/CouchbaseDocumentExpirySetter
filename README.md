@@ -61,7 +61,7 @@ It can take a list of buckets for a Couchbase server and inject the specified ma
 
 An expample of calling it from command line and having it inject a map reduce view to return document id of all documents with no ttl/expiry looks like this:
 
-CouchbaseMapReduceViewManager.exe -h <servername> -b "<buckets to add view to - in same format as above>" -u <username> -p <password> -v no_ttl -c "function (doc, meta) { if (meta.expiration === 0) emit(null, null); }"
+CouchbaseMapReduceViewManager.exe -h servername -b "<buckets to add view to - in same format as above>" -u username -p password -v no_ttl -c "function (doc, meta) { if (meta.expiration === 0) emit(null, null); }"
   
 
 ## Disclaimer
