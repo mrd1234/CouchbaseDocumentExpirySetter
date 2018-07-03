@@ -29,11 +29,17 @@
         [Option('v', "viewname", Required = true, HelpText = "The Couchbase map/reduce view used to get document ids")]
         public string ViewName { get; set; }
 
-        [Option('s', "batchsize", Required = false, HelpText = "The number of documents to request from Couchbase REST service for processing (default = 2000)")]
+        [Option('s', "batchsize", Required = false, HelpText = "The number of documents to request per call from Couchbase REST service for processing (default = 2000)")]
         public int BatchSize { get; set; } = 2000;
 
         [Option('a', "apiport", Required = false, HelpText = "The port the Couchbase REST API responds to (default = 8092)")]
         public int Port { get; set; } = 8092;
+
+        [Option('l', "documentlimit", Required = false, HelpText = "The maximum number of documents to update. Default is all documents. This will override batchsize if the documentlimit value is lower that batchsize value.")]
+        public int? DocumentLimit { get; set; }
+
+        [Option('i', "showdetails", Required = false, HelpText = "Indicates the document id and ttl should be output to the console for each updated document.")]
+        public bool ShowDetails { get; set; } = false;
 
         public ClientConfiguration BuildClientConfiguration()
         {

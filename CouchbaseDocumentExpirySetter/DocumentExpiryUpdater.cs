@@ -30,6 +30,7 @@
             foreach (var bucket in buckets)
             {
                 Console.WriteLine($"Processing documents in bucket '{bucket.Key}'...");
+                if (Options.ShowDetails) Console.WriteLine();
 
                 updates.Add(UpdateExpiryForDocumentsInBucketAsync(bucket.Key, bucket.Value));
             }
@@ -52,9 +53,13 @@
                 while (documents.TotalRows != 0)
                 {
                     documents.Expiry = TimeSpan.FromMinutes(Options.ExpiryMinutes);
-                    await SetExpiryForBucketDocumentsAsync(bucket, documents).ConfigureAwait(false);
+
+                    var limit = Options.DocumentLimit - processedDocuments;
+                    await SetExpiryForBucketDocumentsAsync(bucket, documents, limit, Options.ShowDetails).ConfigureAwait(false);
 
                     processedDocuments += documents.TotalRows;
+
+                    if (Options.DocumentLimit.HasValue && processedDocuments >= Options.DocumentLimit.Value) break;
 
                     if (documents.Expiry.TotalSeconds.Equals(0)) address = Options.BuildRestUrl(bucketName, processedDocuments);
 
@@ -68,20 +73,25 @@
             }
         }
 
-        private Task SetExpiryForBucketDocumentsAsync(IBucket bucket, DocumentList documentList)
+        private Task SetExpiryForBucketDocumentsAsync(IBucket bucket, DocumentList documentList, int? documentLimit, bool showDetails)
         {
             var runningTasks = new List<Task>();
 
+            var processedCount = 0;
+
             foreach (var document in documentList.Rows)
             {
-                runningTasks.Add(SetDocumentExpiryAsync(bucket, document.Id, documentList.Expiry));
+                runningTasks.Add(SetDocumentExpiryAsync(bucket, document.Id, documentList.Expiry, showDetails));
+                processedCount++;
+
+                if (documentLimit.HasValue && processedCount == documentLimit.Value) break;
             }
 
             // Wait for any tasks still running to complete
             return TaskHelper.WaitAllThrottledAsync(runningTasks, MaxActiveTasks);
         }
 
-        private static Task SetDocumentExpiryAsync(IBucket bucket, string documentId, TimeSpan ttl)
+        private static Task SetDocumentExpiryAsync(IBucket bucket, string documentId, TimeSpan ttl, bool showDetails)
         {
             //Console.WriteLine($"Updating expiry for {documentId}");
 
@@ -89,6 +99,8 @@
             //var result = bucket.TouchAsync(documentId, ttl);
 
             var result = bucket.Touch(documentId, ttl);
+
+            if(showDetails) Console.WriteLine($"Expiry for document id {documentId} set to {ttl.TotalMinutes} minute(s)");
 
             if (result.Status == ResponseStatus.Success) return Task.CompletedTask;
 

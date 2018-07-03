@@ -1,6 +1,7 @@
 ﻿namespace CouchbaseDocumentExpirySetter
 {
     using System;
+
     using CommandLine;
 
     internal static class Program
@@ -14,6 +15,7 @@
 
             if (options != null)
             {
+                if (options.DocumentLimit.HasValue && options.DocumentLimit < options.BatchSize) options.BatchSize = options.DocumentLimit.Value;
                 PerformUpdate(options);
             }
 
