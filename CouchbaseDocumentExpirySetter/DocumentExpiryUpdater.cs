@@ -1,6 +1,8 @@
 ﻿namespace CouchbaseDocumentExpirySetter
 {
     using System;
+    using System.Linq;
+    using System.Net;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
@@ -14,11 +16,23 @@
 
         private int MaxActiveTasks { get; } = 100;
 
-        public DocumentExpiryUpdater(Options options)
+        private LogManager LogManager { get; }
+
+        public DocumentExpiryUpdater(Options options, LogManager logManager)
         {
             Options = options;
+            LogManager = logManager;
 
-            ClusterHelper.Initialize(options.BuildClientConfiguration());
+            var config = options.BuildClientConfiguration();
+
+            ServicePointManager.DefaultConnectionLimit = MaxActiveTasks;
+            foreach (var bucketConfig in config.BucketConfigs)
+            {
+                bucketConfig.Value.PoolConfiguration.MaxSize = MaxActiveTasks;
+                bucketConfig.Value.PoolConfiguration.MinSize = MaxActiveTasks;
+            }
+
+            ClusterHelper.Initialize(config);
         }
 
         public Task UpdateExpiryForDocumentsInBucketsAsync()
@@ -91,7 +105,7 @@
             return TaskHelper.WaitAllThrottledAsync(runningTasks, MaxActiveTasks);
         }
 
-        private static Task SetDocumentExpiryAsync(IBucket bucket, string documentId, TimeSpan ttl, bool showDetails)
+        private Task SetDocumentExpiryAsync(IBucket bucket, string documentId, TimeSpan ttl, bool showDetails)
         {
             //Console.WriteLine($"Updating expiry for {documentId}");
 
@@ -100,9 +114,16 @@
 
             var result = bucket.Touch(documentId, ttl);
 
-            if(showDetails) Console.WriteLine($"Expiry for document id {documentId} set to {ttl.TotalMinutes} minute(s)");
+            if (result.Status == ResponseStatus.Success)
+            {
+                if (showDetails) Console.WriteLine($"Expiry for document id {documentId} set to {ttl.TotalMinutes} minute(s)");
+                if (LogManager == null) return Task.CompletedTask;
 
-            if (result.Status == ResponseStatus.Success) return Task.CompletedTask;
+                var expectedExpiry = DateTime.Now.Add(ttl);
+                LogManager.Log(documentId, ttl, $"{expectedExpiry.ToShortDateString()} {expectedExpiry.ToLongTimeString()}");
+
+                return Task.CompletedTask;
+            }
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Unable to set expiry value for documentId '{documentId}' - {result.Status}");
