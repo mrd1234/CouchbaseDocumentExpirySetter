@@ -1,4 +1,8 @@
-# Couchbase Document Expiry Setter
+# Couchbase Utilities
+
+A set of utilities for performing operations on Couchbase server.
+
+## Couchbase Document Expiry Setter
 
 Sets document expiry for all documents in specified Couchbase buckets.
 
@@ -8,32 +12,39 @@ Currently the same expiry value is set for all specified buckets but could be ea
 
 The tool will hit the Couchbase REST API and request the number of document ids specified using the batch size parameter. It will then set the expiry value for all returned documents. This process will repeat until all documents have been updated. 
 
-## Parameters
+### Parameters
 
 This is a command line tool that takes the following parameters:
 
--h, --host         Required. The hostname of the Couchbase server
+-h, --host         				Required. The hostname of the Couchbase server
 
--b, --buckets      Required. The Couchbase bucket(s) to process, eg: bucket1:password1,bucket2:password2
+-b, --buckets      			Required. The Couchbase bucket(s) to process, eg: bucket1:password1,bucket2:password2
 
--u, --username     Required. Couchbase username
+-u, --username     		Required. Couchbase username
 
--p, --password     Required. Password for the specified Couchbase username
+-p, --password     		Required. Password for the specified Couchbase username
 
--e, --expiry       Required. The number of minutes to set as expiry time for each document (use 0 if you want
-                   document to never expire)
+-e, --expiry       				Required. The number of minutes to set as expiry time for each document (use 0 if you want
+										document to never expire)
 
--v, --viewname     Required. The Couchbase map/reduce view used to get document ids
+-v, --viewname     		Required. The Couchbase map/reduce view used to get document ids
 
--s, --batchsize    The number of documents to request from Couchbase REST service for processing (default = 2000)
+-s, --batchsize    			The number of documents to request from Couchbase REST service for processing (default = 2000)
 
--a, --apiport      The port the Couchbase REST API responds to (default = 8092)
+-a, --apiport      			The port the Couchbase REST API responds to (default = 8092)
 
---help             Display this help screen.
+-l, --documentlimit    	The maximum number of documents to update. Default is all documents. This will override
+										batchsize if the documentlimit value is lower that batchsize value.
 
---version          Display version information.
+  -i, --showdetails      	Indicates the document id and ttl should be output to the console for each updated document.
 
-## Couchbase requirements
+  -f, --logfile          			Full path and filename to log list of updated documents to.
+
+--help             				Display this help screen.
+
+--version          				Display version information.
+
+### Couchbase requirements
 
 Map/reduce views are used to get the list of documents to update.
 
@@ -53,7 +64,11 @@ function (doc, meta) {
 }
 ```
 
-## Adding a mapreduce view to Couchbase buckets
+## Couchbase Map/Reduce View Manager
+
+Adds map/reduce views to a Couchbase server.
+
+### Adding a mapreduce view to Couchbase buckets
 
 You can do this using the Couchbase web interface, however the separate console application included in this solution (CouchbaseMapReduceViewManager.exe) may be better. 
 
@@ -65,6 +80,6 @@ CouchbaseMapReduceViewManager.exe -h servername -b "<buckets to add view to - in
   
 NOTE: This will add the mapreduce view as a production view, not a development view. You can use web interface to copy to development if required.
 
-## Disclaimer
+### Disclaimer
 
 This has been tested with Couchbase 4.6.2-3905 Enterprise Edition (build-3905) only.
